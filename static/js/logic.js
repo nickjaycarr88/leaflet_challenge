@@ -1,13 +1,13 @@
 
 // Perform an API call to the earthquake.usgs.gov API to get the station information. Call createCircles when it completes.
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").then(createCircles);
+d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson").then(createCircles);
 
 
 function createMap(earthquakeLocations) {
 
   // Create the tile layer that will be the background of our map.
   let streetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   });
 
 
@@ -29,12 +29,16 @@ function createMap(earthquakeLocations) {
   });
 
   // Create a layer control, and pass it baseMaps and overlayMaps. Add the layer control to the map.
-  L.control.layers(baseMaps,  {
+  L.control.layers(baseMaps, {
     collapsed: false
   }).addTo(map);
 }
 
 function createCircles(response) {
+
+  function circleSize(earthquakeSize) {
+    return Math.sqrt(earthquakeSize) * 50000;
+  }
 
   // Pull the "features" property from response.data.
   let earthquakeJSONinfo = response.features;
@@ -47,10 +51,12 @@ function createCircles(response) {
     let earthquakeIteration = earthquakeJSONinfo[index];
 
     // For each earthquake, create a circle in accordance to the lat and lon.
-    let earthquakeCircle = L.circle([earthquakeIteration.geometry.coordinates[1], earthquakeIteration.geometry.coordinates[0]]);
-
-    // Add the marker to the earthquakeArray array.
-    earthquakeArray.push(earthquakeCircle);
+    earthquakeArray.push(
+      L.circle([earthquakeIteration.geometry.coordinates[1], earthquakeIteration.geometry.coordinates[0]], {
+        color: "green",
+        radius: circleSize(response.features[index].properties.mag)
+      }))
+    
   }
 
   // Create a layer group that's made from the earthquakeArray, and pass it to the createMap function.
