@@ -1,6 +1,6 @@
 
 // Perform an API call to the earthquake.usgs.gov API to get the station information. Call createCircles when it completes.
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson").then(createCircles);
+d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_day.geojson").then(createCircles);
 
 
 function createMap(earthquakeLocations) {
@@ -37,7 +37,7 @@ function createMap(earthquakeLocations) {
 function createCircles(response) {
 
   function circleSize(earthquakeSize) {
-    return Math.sqrt(earthquakeSize) * 50000;
+    return Math.sqrt(earthquakeSize) * 30000;
   }
 
   // Pull the "features" property from response.data.
@@ -49,11 +49,40 @@ function createCircles(response) {
   // Loop through the earthquakeJSONinfo array.
   for (let index = 0; index < earthquakeJSONinfo.length; index++) {
     let earthquakeIteration = earthquakeJSONinfo[index];
+    //this block of code lets me see the range of depth that is available
+    // dptarray = []
+    // let dpt = earthquakeIteration.geometry.coordinates[2];
+    // dptarray.push(dpt);
+    // let dptsort = dptarray.sort();
+    // console.log(dptsort)
+    
+
+    let color = "";
+    if (earthquakeIteration.geometry.coordinates[2] > 90) {
+      color = "purple";
+    }
+    else if (earthquakeIteration.geometry.coordinates[2] > 70) {
+      color = "blue";
+    }
+    else if (earthquakeIteration.geometry.coordinates[2] > 50) {
+        color = "red";
+    }
+    else if (earthquakeIteration.geometry.coordinates[2] > 30) {
+          color = "green";
+    }
+    else if (earthquakeIteration.geometry.coordinates[2] > 10) {
+            color = "orange";
+    }
+    else {
+      color = "yellow";
+    }
+    
 
     // For each earthquake, create a circle in accordance to the lat and lon.
     earthquakeArray.push(
       L.circle([earthquakeIteration.geometry.coordinates[1], earthquakeIteration.geometry.coordinates[0]], {
-        color: "green",
+        color: "white",
+        fillColor: color,
         radius: circleSize(response.features[index].properties.mag)
       }))
     
@@ -61,7 +90,7 @@ function createCircles(response) {
 
   // Create a layer group that's made from the earthquakeArray, and pass it to the createMap function.
   createMap(L.layerGroup(earthquakeArray));
-}
 
+}
 
 
