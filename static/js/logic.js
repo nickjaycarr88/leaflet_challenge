@@ -1,4 +1,3 @@
-
 // Perform an API call to the earthquake.usgs.gov API to get the station information. Call createCircles when it completes.
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_day.geojson").then(createCircles);
 
@@ -32,6 +31,9 @@ function createMap(earthquakeLocations) {
   L.control.layers(baseMaps, {
     collapsed: false
   }).addTo(map);
+
+
+
 }
 
 function createCircles(response) {
@@ -92,5 +94,8 @@ function createCircles(response) {
   createMap(L.layerGroup(earthquakeArray));
 
 }
+
+
+
 
 
